@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react";
+import { SongList } from "./components/SongList";
+import spotify from "./lib/spotify";
+
 
 function App() {
+  useEffect(() => {
+    spotify.getPopularSongs();
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      <main className="flex-1 p-8 mb-20">
+        <header className="flex justify-between items-center mb-10">
+          <h1 className="text-4xl font-bold">Music App</h1>
+        </header>
+        <section>
+          <h2 className="text-2xl font-semibold mb-5">Popular Songs</h2>
+          <SongList />
+        </section>
+      </main>
     </div>
   );
 }
