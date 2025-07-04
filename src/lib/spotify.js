@@ -30,6 +30,15 @@ class SpotifyClient {
     return response.data.tracks;
   }
 
+  async getAlbum() {
+    const response = await axios.get(
+      "https://api.spotify.com/v1/albums/3bRSI9DOQA2KdJ7t6zdW0V",
+      {
+        headers: { Authorization: `Bearer ${this.token}` },
+      }
+    )
+    return response.data;
+  }
   // 曲を検索するメソッド
   async searchSongs(keyword, limit, offset) {
     const response = await axios.get(
@@ -47,4 +56,3 @@ class SpotifyClient {
 
 const spotify = await SpotifyClient.initialize();
 export default spotify;
-

@@ -3,11 +3,13 @@ import { SongList } from "./components/SongList";
 import spotify from "./lib/spotify";
 import { SearchInput } from "./components/searchInput";
 import { Pagination } from "./components/pagination";
+import { AlbumList } from "./components/AlbumList";
 
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [popularSongs, setPopularSongs] = useState([]);
+  const [album, setGetAlbum] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [searchedSongs, setSearchedSongs] = useState();
   const [page, setPage] = useState(1);
@@ -20,6 +22,8 @@ function App() {
   // コンポーネントがマウントされたときに人気の曲を取得する
   useEffect(() => {
     fetchPopularSongs();
+    fetchAlbum();
+
   }, []);
 
   // 人気の曲を取得する関数
@@ -30,11 +34,21 @@ function App() {
     const popularSongs = result.items.map((item) => {
       return item.track;
     })
-    console.log(popularSongs);
+    // console.log(popularSongs);
     setPopularSongs(popularSongs);
     setIsLoading(false);
   }
 
+  // おすすめプレイリストを取得する関数
+  const fetchAlbum = async () => {
+    setIsLoading(true);
+    const result = await spotify.getAlbum();
+    console.log(result);
+
+    // setGetAlbum(result);
+    setGetAlbum([result]);
+    setIsLoading(false);
+  }
   // 検索キーワードの変更をハンドルする関数
   const handleInputChange = (e) => {
     setKeyword(e.target.value);
@@ -77,6 +91,10 @@ function App() {
         <section>
           <h2 className="text-2xl font-semibold mb-5">{isSearchedResult ? "Search Results" : "Popular Songs"}</h2>
           <SongList isLoading={isLoading} songs={isSearchedResult ? searchedSongs : popularSongs} />
+
+          <h2 className="text-2xl font-semibold mb-5">{isSearchedResult ? "Search Results" : "Album"}</h2>
+          <AlbumList isLoading={isLoading} albums={isSearchedResult ? searchedSongs : album} />
+
           {isSearchedResult &&
             <Pagination
               onPrev={hasPrev ? moveToPrev : null}
