@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { SongList } from "./components/SongList";
 import spotify from "./lib/spotify";
 import { SearchInput } from "./components/searchInput";
+import { Pagination } from "./components/pagination";
 
 
 function App() {
@@ -9,7 +10,12 @@ function App() {
   const [popularSongs, setPopularSongs] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [searchedSongs, setSearchedSongs] = useState();
+  const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrev, setHasPrev] = useState(false);
+
   const isSearchedResult = searchedSongs != null;
+  const limit = 20;
 
   // コンポーネントがマウントされたときに人気の曲を取得する
   useEffect(() => {
@@ -35,11 +41,29 @@ function App() {
   }
 
   // 検索ボタンがクリックされたときの処理
-  const searchSongs = async () => {
+  const searchSongs = async (page) => {
     setIsLoading(true);
-    const result = await spotify.searchSongs(keyword);
+    const offset = parseInt(page) ? (parseInt(page) - 1) * limit : 0;
+    const result = await spotify.searchSongs(keyword, limit, offset);
+    setHasNext(result.next != null);
+    setHasPrev(result.previous != null);
     setSearchedSongs(result.items);
     setIsLoading(false);
+  }
+
+  // Nextのボタンがクリックされたときの処理
+  const moveToNext = async () => {
+    const nextPage = page + 1;
+    await searchSongs(nextPage);
+    setPage(nextPage);
+  }
+
+  // Prevのボタンがクリックされたときの処理
+  const moveToPrev = async () => {
+    const prevPage = page - 1;
+    await searchSongs(
+      prevPage);
+    setPage(prevPage);
   }
 
   return (
@@ -53,6 +77,11 @@ function App() {
         <section>
           <h2 className="text-2xl font-semibold mb-5">{isSearchedResult ? "Search Results" : "Popular Songs"}</h2>
           <SongList isLoading={isLoading} songs={isSearchedResult ? searchedSongs : popularSongs} />
+          {isSearchedResult &&
+            <Pagination
+              onPrev={hasPrev ? moveToPrev : null}
+              onNext={hasNext ? moveToNext : null}
+            />}
         </section>
       </main>
     </div>

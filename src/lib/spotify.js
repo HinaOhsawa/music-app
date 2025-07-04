@@ -31,12 +31,12 @@ class SpotifyClient {
   }
 
   // 曲を検索するメソッド
-  async searchSongs(keyword) {
+  async searchSongs(keyword, limit, offset) {
     const response = await axios.get(
       `https://api.spotify.com/v1/search`,
       {
         headers: { Authorization: `Bearer ${this.token}` },
-        params: { q: keyword, type: "track" },
+        params: { q: keyword, type: "track", limit, offset },
       }
     )
     return response.data.tracks;
@@ -48,14 +48,3 @@ class SpotifyClient {
 const spotify = await SpotifyClient.initialize();
 export default spotify;
 
-export const getToken = async () => {
-  const response = await axios.post("https://accounts.spotify.com/api/token", {
-    grant_type: "client_credentials",
-    client_id: process.env.REACT_APP_SPOTIFY_CLIENT_ID,
-    client_secret: process.env.REACT_APP_SPOTIFY_CLIENT_SECRET,
-  }, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  })
-};
