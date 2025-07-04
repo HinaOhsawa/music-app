@@ -30,6 +30,7 @@ class SpotifyClient {
     return response.data.tracks;
   }
 
+  // アルバムを取得
   async getAlbum() {
     const response = await axios.get(
       "https://api.spotify.com/v1/albums/3bRSI9DOQA2KdJ7t6zdW0V",
