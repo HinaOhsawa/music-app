@@ -1,12 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SongList } from "./components/SongList";
 import spotify from "./lib/spotify";
 
 
 function App() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [popularSongs, setPopularSongs] = useState([false]);
+
   useEffect(() => {
-    spotify.getPopularSongs();
+    fetchPopularSongs();
   }, []);
+
+  const fetchPopularSongs = async () => {
+    setIsLoading(true);
+    const result = await spotify.getPopularSongs();
+
+    const popularSongs = result.items.map((item) => {
+      return item.track;
+    })
+    console.log(popularSongs);
+    setPopularSongs(popularSongs);
+    setIsLoading(false);
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       <main className="flex-1 p-8 mb-20">
@@ -15,7 +31,7 @@ function App() {
         </header>
         <section>
           <h2 className="text-2xl font-semibold mb-5">Popular Songs</h2>
-          <SongList />
+          <SongList isLoading={isLoading} songs={popularSongs} />
         </section>
       </main>
     </div>
